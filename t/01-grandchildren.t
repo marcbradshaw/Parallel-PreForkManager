@@ -1,3 +1,4 @@
+#!/usr/bin/perl
 #!/usr/bin/perl -T
 
 use strict;
@@ -11,8 +12,6 @@ use List::Util;
 
 plan tests => 1;
 
-my @Results;
-
 my $Worker = Parallel::PreForkManager->new({
     'ChildHandler'   => \&WorkHandler,
     'ParentCallback' => \&CallbackHandler,
@@ -20,13 +19,15 @@ my $Worker = Parallel::PreForkManager->new({
     'JobsPerChild'    => 10,
 });
 
+$Worker->{ '_Results' } = [];
+
 for ( my $i=0;$i<10;$i++ ) {
     $Worker->AddJob({ 'Value' => $i });
 }
 
 $Worker->RunJobs();
 
-@Results = sort @Results;
+my @Results = sort @{ $Worker->{ '_Results' } };
 my @Expected = (
     'SubWorkHandler:0.0',
     'SubWorkHandler:0.1',
@@ -153,6 +154,8 @@ sub WorkHandler {
         'JobsPerChild'    => 10,
     });
 
+    $Worker2->{ '_Results' } = [];
+
     $Worker2->{ 'Val' } = $Val;
 
     my $Start = $Val * 10;
@@ -163,9 +166,8 @@ sub WorkHandler {
 
     $Worker2->RunJobs();
 
-    push @Results, "WorkHandler:$Val";
-
-    return \@Results;
+    push @{ $Worker2->{ '_Results' } }, "WorkHandler:$Val";
+    return $Worker2->{ '_Results' };
 }
 
 sub SubWorkHandler {
@@ -177,13 +179,14 @@ sub SubWorkHandler {
 
 sub CallbackHandler {
     my ( $Self, $Foo ) = @_;
-    @Results = ( @Results, @$Foo );
+    my @Results = ( @{ $Self->{ '_Results' } }, @$Foo );
+    $Self->{ '_Results' } = \@Results;
     return;
 }
 
 sub SubCallbackHandler {
     my ( $Self, $Foo ) = @_;
-    push @Results, $Foo;
+    push @{ $Self->{ '_Results' } } , $Foo;
     return;
 }
 
