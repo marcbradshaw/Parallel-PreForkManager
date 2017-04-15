@@ -3,6 +3,8 @@ package Parallel::PreForkManager;
 use strict;
 use warnings;
 
+# VERSION
+
 use Carp;
 use IO::Handle;
 use IO::Select;
@@ -212,7 +214,7 @@ sub StartChild {
 
         # Setup communication pipes
         $Self->{'ToParent'} = $ToParent;
-        open( STDIN, '/dev/null' );
+        open( STDIN, '<', '/dev/null' );
 
         # Send the initial request
         $Self->Send( $ToParent, { 'Method' => 'Startup' } );
@@ -420,31 +422,33 @@ Much of the heavy lifting is cribbed from Parallel::Fork::BossWorker
         'JobsPerChild'     => 10,
     });
 
-=head2 ChildHandler
+=over
+
+=item ChildHandler
 
 The method which will do the work in the child.
 
-=head2 ParentCallback
+=item ParentCallback
 
 An optional method called in the parent process with the results from each child process.
 
-=head2 ProgressCallback
+=item ProgressCallback
 
 An optional hashref of named methods which child processes may call back to the parent process and run.
 
-=head2 ChildCount
+=item ChildCount
 
 Number of child processes to spawn/maintain, default 10.
 
-=head2 JobsPerChild
+=item JobsPerChild
 
 The number of jobs a child process may run before it is respawned.
 
-=head2 Timeout
+=item Timeout
 
 Time limit in seconds for a child process run.
 
-=head2 WaitComplete
+=item WaitComplete
 
 Wait for all children to complete before returning?  Defaults to 1.
 
@@ -452,7 +456,11 @@ Call the WaitComplete() method to wait for children manually.
 
 =back
 
+=back
+
 =head1 PUBLIC METHODS
+
+=over
 
 =item AddJob( $Job )
 
@@ -469,7 +477,11 @@ Run in the parent process, waits for all children to complete.
 
 =item ProgressCallback
 
+=back
+
 =head1 USER DEFINED METHODS
+
+=over
 
 =item ChildHandler( $Job )
 
@@ -495,17 +507,33 @@ The parent is blocked from doing any scheduling work while this callback is runn
 
 This should only be used for short running tasks which need to run in the parent process.
 
+=back
+
 =head1 INTERNAL METHODS
+
+=over
 
 =item StartChildren
 
+Start the right number of child processes.
+
 =item StartChild
+
+Start a single child process.
 
 =item Child
 
+Child process main processing loop.
+
 =item Receive
 
+IPC Receive.
+
 =item Send
+
+IPC Send.
+
+=back
 
 =head1 DEPENDENCIES
 
