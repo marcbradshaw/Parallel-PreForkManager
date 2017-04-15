@@ -573,6 +573,12 @@ Please report bugs via the github tracker.
 
 https://github.com/marcbradshaw/Parallel-PreForkManager/issues
 
+=head1 REFERENCE
+
+Obligatory XKCD reference.
+
+https://xkcd.com/927/
+
 =head1 AUTHORS
 
 Marc Bradshaw, E<lt>marc@marcbradshaw.netE<gt>
