@@ -27,7 +27,7 @@ sub new {
         'Select'           => IO::Select->new(),
     };
 
-    foreach my $Arg ( qw { ParentCallback ProgressCallback JobsPerChild } ) {
+    foreach my $Arg ( qw { ParentCallback ProgressCallback JobsPerChild ChildSetupHook ChildTeardownHook } ) {
         $Self->{ $Arg  } = $Args->{ $Arg } if exists ( $Args->{ $Arg } );
     }
 
@@ -232,6 +232,10 @@ sub Child {
     my ( $Self, $FromParent ) = @_;
     $Self->{'FromParent'} = $FromParent;
 
+    if ( exists( $Self->{'ChildSetupHook'} ) ) {
+        &{ $Self->{'ChildSetupHook'} }( $Self );
+    }
+
     # Read instructions from the parent
     while ( my $Instructions = $Self->Receive($FromParent) ) {
 
@@ -240,6 +244,9 @@ sub Child {
 
         if ( exists( $Instructions->{'Shutdown'} ) ) {
             warn "Child $PID shutdown" if $DEBUG;
+            if ( exists( $Self->{'ChildTeardownHook'} ) ) {
+                &{ $Self->{'ChildTeardownHook'} }( $Self );
+            }
             exit 0;
         }
 
@@ -267,6 +274,9 @@ sub Child {
 
         # Warn on errors
         if ($@) {
+            if ( exists( $Self->{'ChildTeardownHook'} ) ) {
+                &{ $Self->{'ChildTeardownHook'} }( $Self );
+            }
             croak("Child $PID error: $@");
         }
 
@@ -284,6 +294,10 @@ sub Child {
 
         # Send the result to the server
         $Self->Send( $Self->{'ToParent'}, $ResultToParent );
+    }
+
+    if ( exists( $Self->{'ChildTeardownHook'} ) ) {
+        &{ $Self->{'ChildTeardownHook'} }( $Self );
     }
 
     warn "Child $PID completed" if $DEBUG;
@@ -355,28 +369,22 @@ the results to the parent process.
 Each child can be made to exit and respawn after a set number of jobs, and can call back
 to methods in the parent process if required.
 
-This module borrows heavily from Parallel::Fork::BossWorker with the following differences.
-
-    * JSON is used for serialisation rather than Data::Dumper
-
-    * Child processes may call back to a method in the parent process.
-
-    * Child processes can have a set limit of jobs they can process before they are respawned.
-
-Much of the heavy lifting is cribbed from Parallel::Fork::BossWorker
+Methods can be defined for child setup and teardown.
 
 =head1 SYNOPSIS
 
     use Parallel::PreForkManager;
 
     my $Worker = Parallel::PreForkManager->new({
-        'ChildHandler'     => \&WorkHandler,
-        'ParentCallback'   => \&CallbackHandler,
-        'ProgressCallback' => {
+        'ChildHandler'      => \&WorkHandler,
+        'ParentCallback'    => \&CallbackHandler,
+        'ProgressCallback'  => {
             'Log' => \&LogCallback,
         },
-        'ChildCount'       => 10,
-        'JobsPerChild'     => 10,
+        'ChildSetupHook'    => \&ChildSetupHook,
+        'ChildTeardownHook' => \&ChildTeardownHook,
+        'ChildCount'        => 10,
+        'JobsPerChild'      => 10,
     });
 
     for ( my $i=0;$i<300;$i++ ) {
@@ -384,6 +392,16 @@ Much of the heavy lifting is cribbed from Parallel::Fork::BossWorker
     }
 
     $Worker->RunJobs();
+
+    sub ChildSetupHook {
+        my ( $Self ) = @_;
+        return;
+    }
+
+    sub ChildTeardownHook {
+        my ( $Self ) = @_;
+        return;
+    }
 
     sub LogCallback {
         my ( $Self, $Data ) = @_;
@@ -451,6 +469,14 @@ Time limit in seconds for a child process run.
 Wait for all children to complete before returning?  Defaults to 1.
 
 Call the WaitComplete() method to wait for children manually.
+
+=item ChildSetupHook
+
+Method which runs in the child when it is spawned.
+
+=item ChildTeardownHook
+
+Method which runs in the child when it is reaped.
 
 =back
 
@@ -541,6 +567,12 @@ IPC Send.
   JSON
   English
 
+=head1 BUGS
+
+Please report bugs via the github tracker.
+
+https://github.com/marcbradshaw/Parallel-PreForkManager/issues
+
 =head1 AUTHORS
 
 Marc Bradshaw, E<lt>marc@marcbradshaw.netE<gt>
@@ -548,6 +580,12 @@ Marc Bradshaw, E<lt>marc@marcbradshaw.netE<gt>
 =head1 COPYRIGHT
 
 Copyright (c) 2017, Marc Bradshaw.
+
+=head1 CREDITS
+
+Originally based on code from Parallel::Fork::BossWorker by Jeff Rodriguez, <jeff@jeffrodriguez.com> (c) 2007 and Tim Wilde, <twilde@cpan.org> (c) 2011
+
+=head1 LICENCE
 
 This library is free software; you may redistribute it and/or modify it
 under the same terms as Perl itself.
