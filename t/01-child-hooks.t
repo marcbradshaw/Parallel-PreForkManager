@@ -7,7 +7,6 @@ use English;
 
 use Test::More;
 
-use List::Util qw{ uniq };
 use Capture::Tiny ':all';
 
 plan tests => 1;

@@ -7,7 +7,7 @@ use English;
 
 use Test::More;
 
-use List::Util qw{ uniq };
+use List::Util 1.45 qw{ uniq };
 
 plan tests => 1;
 
