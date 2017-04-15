@@ -79,9 +79,9 @@ sub RunJobs {
                         #my $Child = $Self->{ 'ToChild' }->{ $Result->{ 'pid' } };
                         my $NextJob = shift( @{ $Self->{'JobQueue'} } );
                         $Self->Send( $Self->{'ToChild'}->{ $Result->{'pid'} }, { 'Job' => $NextJob, }, );
-        		next READLOOP;
+                        next READLOOP;
                     }
-        	    else {
+                    else {
                         # Nothing to do, shut down
                         $Self->{'Select'}->remove($fh);
                         my $fh = $Self->{'ToChild'}->{ $Result->{'pid'} };
@@ -92,7 +92,7 @@ sub RunJobs {
                 }
 
                 # Process the result handler
-        	if ( $ResultMethod eq 'Completed' ) {
+                if ( $ResultMethod eq 'Completed' ) {
                     # The child has completed it's work, process the results.
                     if ( $Result->{'Data'} && exists( $Self->{'ParentCallback'} ) ) {
                         &{ $Self->{'ParentCallback'} }( $Self, $Result->{'Data'} );
@@ -105,7 +105,7 @@ sub RunJobs {
                         delete( $Self->{'ToChild'}->{ $Result->{'pid'} } );
                         $Self->Send( $fh, { 'Shutdown' => 1, }, );
                         close($fh);
-        		# If there are still jobs to be done then start a new child
+                        # If there are still jobs to be done then start a new child
                         if ( $#{ $Self->{'JobQueue'} } > -1 ) {
                             $Self->StartChild();
                         }
@@ -114,18 +114,17 @@ sub RunJobs {
 
                     # If there's still work to be done, send it to the child
                     if ( $#{ $Self->{'JobQueue'} } > -1 ) {
-                        #my $Child = $Self->{ 'ToChild' }->{ $Result->{ 'pid' } };
                         my $NextJob = shift( @{ $Self->{'JobQueue'} } );
                         $Self->Send( $Self->{'ToChild'}->{ $Result->{'pid'} }, { 'Job' => $NextJob, }, );
-        		next READLOOP;
+                        next READLOOP;
                     }
 
-        	    # There is no more work to be done, shut down this child
+                    # There is no more work to be done, shut down this child
                     $Self->{'Select'}->remove($fh);
                     my $fh = $Self->{'ToChild'}->{ $Result->{pid} };
                     delete( $Self->{'ToChild'}->{ $Result->{pid} } );
                     close($fh);
-        	    next READLOOP;
+                    next READLOOP;
                 }
 
                 if ( $ResultMethod eq 'ProgressCallback' ) {
@@ -156,15 +155,12 @@ sub RunJobs {
 
 sub WaitComplete {
     my ( $Self ) = @_;
-    # Wait for our children so the process table won't fill up
     while ( ( my $pid = wait() ) != -1 ) { }
     return;
 }
 
 sub StartChildren {
     my ($Self) = @_;
-
-    # Create a pipe for the workers to communicate to the boss
 
     my $MaxChildren = $Self->{ 'ChildCount' };
     my $ActualJobs  = scalar @{ $Self->{ 'JobQueue' } };
@@ -236,7 +232,7 @@ sub Child {
     my ( $Self, $FromParent ) = @_;
     $Self->{'FromParent'} = $FromParent;
 
-    # Read instructions from the server
+    # Read instructions from the parent
     while ( my $Instructions = $Self->Receive($FromParent) ) {
 
         # If the handler's children die, that's not our business
@@ -250,6 +246,7 @@ sub Child {
         # Execute the handler with the given instructions
         my $Result;
         eval {
+
             # Handle alarms
             local $SIG{ALRM} = sub {
                 die "Child timed out.";
@@ -265,6 +262,7 @@ sub Child {
 
             # Disable alarm
             alarm(0);
+
         };
 
         # Warn on errors
@@ -555,3 +553,4 @@ This library is free software; you may redistribute it and/or modify it
 under the same terms as Perl itself.
 
 =cut
+
