@@ -2,10 +2,10 @@
 
 use strict;
 use warnings;
-use Worker;
+use Parallel::PreForkManager;
 use English;
 
-my $Worker = Worker->new({
+my $Worker = Parallel::PreForkManager->new({
     'ChildHandler'   => \&WorkHandler,
     'ParentCallback' => \&CallbackHandler,
     'ProgressCallback' => {
