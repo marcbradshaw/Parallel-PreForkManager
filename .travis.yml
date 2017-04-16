@@ -17,12 +17,12 @@ before_install:
    - perl -V
    - cpanm -n Devel::Cover::Report::Coveralls Dist::Zilla::Plugin::OSPrereqs
    - cpanm -n Dist::Zilla::Plugin::AutoPrereqs Dist::Zilla::Plugin::AutoVersion Dist::Zilla::Plugin::ConfirmRelease Dist::Zilla::Plugin::Git::Contributors Dist::Zilla::Plugin::OurPkgVersion Dist::Zilla::Plugin::PodSyntaxTests Dist::Zilla::Plugin::ReadmeAnyFromPod Dist::Zilla::Plugin::Test::Perl::Critic Dist::Zilla::Plugin::TestRelease Dist::Zilla::Plugin::UploadToCPAN Dist::Zilla::PluginBundle::Basic
-   - cpanm -n Test::More List::Util Capture::Tiny Test::Pod::Coverage
+   - cpanm -n Test::More List::Util Capture::Tiny Test::Pod::Coverage Devel::Cover::Report::Coveralls
 
 install:
     - cpanm -n Carp IO::Handle IO::Select JSON English
 
-script: HARNESS_IS_VERBOSE=1 prove -v -Ilib t
+script: HARNESS_IS_VERBOSE=1 dzil test
 
 after_script:
   - cover -test -make 'prove -Ilib t' -report coveralls
