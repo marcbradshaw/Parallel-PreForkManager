@@ -98,6 +98,7 @@ sub RunJobs {
                     if ( exists( $Self->{'ParentCallback'} ) ) {
                         $Self->{ 'Result' } = $Result;
                         &{ $Self->{'ParentCallback'} }( $Self, $Result->{ 'Data' } );
+                        delete $Self->{ 'Result' };
                     }
 
                     # If the child has reached its processing limit then shut it down
