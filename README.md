@@ -63,7 +63,8 @@ Methods can be defined for child setup and teardown.
     }
 
     sub CallbackHandler {
-        my ( $Self, $Foo ) = @_;
+        my ( $Self, $Result ) = @_;
+        my $Foo = $Result->{ 'Data' };
         print "Child returned $Foo to Parent\n";
         return;
     };

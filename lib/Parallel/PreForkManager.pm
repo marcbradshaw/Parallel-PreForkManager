@@ -93,9 +93,10 @@ sub RunJobs {
 
                 # Process the result handler
                 if ( $ResultMethod eq 'Completed' ) {
+
                     # The child has completed it's work, process the results.
-                    if ( $Result->{'Data'} && exists( $Self->{'ParentCallback'} ) ) {
-                        &{ $Self->{'ParentCallback'} }( $Self, $Result->{'Data'} );
+                    if ( exists( $Self->{'ParentCallback'} ) ) {
+                        &{ $Self->{'ParentCallback'} }( $Self, $Result );
                     }
 
                     # If the child has reached its processing limit then shut it down
@@ -250,6 +251,9 @@ sub Child {
             exit 0;
         }
 
+        my $ResultToParent = {};
+        $ResultToParent->{ 'Request' } = $Instructions;
+
         # Execute the handler with the given instructions
         my $Result;
         eval {
@@ -272,18 +276,19 @@ sub Child {
 
         };
 
-        # Warn on errors
-        if ($@) {
+        # report errors
+        if (my $Error = $@) {
+            warn "Child $PID errored: $@" if $DEBUG;
             if ( exists( $Self->{'ChildTeardownHook'} ) ) {
-                &{ $Self->{'ChildTeardownHook'} }( $Self );
+                eval { &{ $Self->{'ChildTeardownHook'} }( $Self ); };
             }
-            croak("Child $PID error: $@");
+            $ResultToParent->{ 'Method' } = 'Completed';
+            $ResultToParent->{ 'Error' }  = $Error;
         }
-
-        my $ResultToParent = {
-            'Method' => 'Completed',
-            'Data'   => $Result,
-        };
+        else {
+            $ResultToParent->{ 'Method' } = 'Completed';
+            $ResultToParent->{ 'Data' }   = $Result;
+        }
 
         if ( exists( $Self->{'JobsPerChild'} ) ) {
             $Self->{'JobsPerChild'} = $Self->{'JobsPerChild'} - 1;
@@ -417,7 +422,8 @@ Methods can be defined for child setup and teardown.
     }
 
     sub CallbackHandler {
-        my ( $Self, $Foo ) = @_;
+        my ( $Self, $Result ) = @_;
+        my $Foo = $Result->{ 'Data' };
         print "Child returned $Foo to Parent\n";
         return;
     };
