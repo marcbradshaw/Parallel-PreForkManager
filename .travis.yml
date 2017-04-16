@@ -17,7 +17,12 @@ before_install:
    - perl -V
 
 install:
-   - cpanm -n Devel::Cover::Report::Coveralls Dist::Zilla::Plugin::OSPrereqs Dist::Zilla::Plugin::AutoPrereqs Dist::Zilla::Plugin::AutoVersion Dist::Zilla::Plugin::ConfirmRelease Dist::Zilla::Plugin::Git::Contributors Dist::Zilla::Plugin::OurPkgVersion Dist::Zilla::Plugin::PodSyntaxTests Dist::Zilla::Plugin::ReadmeAnyFromPod Dist::Zilla::Plugin::Test::Perl::Critic Dist::Zilla::Plugin::TestRelease Dist::Zilla::Plugin::UploadToCPAN Dist::Zilla::PluginBundle::Basic Test::More List::Util Capture::Tiny Test::Pod Test::Pod::Coverage Devel::Cover::Report::Coveralls Carp IO::Handle IO::Select JSON English Test::Exception
+   - cpanm -n Devel::Cover::Report::Coveralls Dist::Zilla::Plugin::OSPrereqs Dist::Zilla::Plugin::AutoPrereqs Dist::Zilla::Plugin::AutoVersion
+   - cpanm -n Dist::Zilla::Plugin::ConfirmRelease Dist::Zilla::Plugin::Git::Contributors Dist::Zilla::Plugin::OurPkgVersion
+   - cpanm -n Dist::Zilla::Plugin::PodSyntaxTests Dist::Zilla::Plugin::ReadmeAnyFromPod Dist::Zilla::Plugin::Test::Perl::Critic
+   - cpanm -n Dist::Zilla::Plugin::TestRelease Dist::Zilla::Plugin::UploadToCPAN Dist::Zilla::PluginBundle::Basic Test::More
+   - cpanm -n List::Util Capture::Tiny Test::Pod Test::Pod::Coverage Devel::Cover::Report::Coveralls Carp IO::Handle IO::Select
+   - cpanm -n JSON English Test::Exception
 
 script: HARNESS_IS_VERBOSE=1 dzil test
 
