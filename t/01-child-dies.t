@@ -21,7 +21,8 @@ my $Worker = Parallel::PreForkManager->new({
         die() if $Val > 10;
     },
     'ParentCallback' => sub{
-        my ( $Self, $Result ) = @_;
+        my ( $Self, $Thing ) = @_;
+        my $Result = $Self->GetResult();
         if ( exists( $Result->{ 'Error' } ) ) {
             $Errored++;
         }

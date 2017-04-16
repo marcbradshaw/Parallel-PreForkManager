@@ -178,16 +178,14 @@ sub SubWorkHandler {
 }
 
 sub CallbackHandler {
-    my ( $Self, $Result ) = @_;
-    my $Foo = $Result->{ 'Data' };
+    my ( $Self, $Foo ) = @_;
     my @Results = ( @{ $Self->{ '_Results' } }, @$Foo );
     $Self->{ '_Results' } = \@Results;
     return;
 }
 
 sub SubCallbackHandler {
-    my ( $Self, $Result ) = @_;
-    my $Foo = $Result->{ 'Data' };
+    my ( $Self, $Foo ) = @_;
     push @{ $Self->{ '_Results' } } , $Foo;
     return;
 }

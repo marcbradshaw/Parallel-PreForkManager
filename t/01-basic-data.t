@@ -89,8 +89,7 @@ sub WorkHandler {
 }
 
 sub CallbackHandler {
-        my ( $Self, $Result ) = @_;
-        my $Val = $Result->{ 'Data' };
+        my ( $Self, $Val ) = @_;
         push @Results, "CallbackHandler:$Val";
         return;
 };

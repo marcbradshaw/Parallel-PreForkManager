@@ -132,6 +132,10 @@ Methods can be defined for child setup and teardown.
 
     Start the children and run the jobs.
 
+- GetResult
+
+    Called in the parent callback, get a full results dataset from the child.
+
 - WaitComplete
 
     Run in the parent process, waits for all children to complete.

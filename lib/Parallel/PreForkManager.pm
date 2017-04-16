@@ -96,7 +96,8 @@ sub RunJobs {
 
                     # The child has completed it's work, process the results.
                     if ( exists( $Self->{'ParentCallback'} ) ) {
-                        &{ $Self->{'ParentCallback'} }( $Self, $Result );
+                        $Self->{ 'Result' } = $Result;
+                        &{ $Self->{'ParentCallback'} }( $Self, $Result->{ 'Data' } );
                     }
 
                     # If the child has reached its processing limit then shut it down
@@ -152,6 +153,11 @@ sub RunJobs {
     }
 
     return;
+}
+
+sub GetResult {
+    my ( $Self ) = @_;
+    return $Self->{ 'Result' };
 }
 
 sub WaitComplete {
@@ -500,6 +506,10 @@ the child worker process for processing.
 =item RunJobs
 
 Start the children and run the jobs.
+
+=item GetResult
+
+Called in the parent callback, get a full results dataset from the child.
 
 =item WaitComplete
 
