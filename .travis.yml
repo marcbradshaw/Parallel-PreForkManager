@@ -1,0 +1,28 @@
+language: perl
+perl:
+  - "5.24"
+  - "5.22"
+  - "5.20"
+  - "5.18"
+  - "5.16"
+  - "5.14"
+  - "5.12"
+  - "5.10"
+
+before_install:
+   - git config --global user.name "TravisCI"
+   - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+   - source ~/travis-perl-helpers/init
+   - build-perl
+   - perl -V
+   - cpanm -n Devel::Cover::Report::Coveralls Dist::Zilla::Plugin::OSPrereqs
+   - cpanm --quiet --notest Test::More List::Util Capture::Tiny Test::Pod::Coverage
+
+install:
+    - cpanm --quiet --notest Carp IO::Handle IO::Select JSON English
+
+script: HARNESS_IS_VERBOSE=1 prove -v -Ilib t
+
+after_script:
+  - cover -test -make 'prove -Ilib t' -report coveralls
+
