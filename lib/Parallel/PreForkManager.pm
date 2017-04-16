@@ -20,14 +20,14 @@ sub new {
 
     my $Self = {
         'ChildHandler'     => $Args->{'ChildHandler'},
-        'ChildCount'       => $Args->{'ChildCount'}    || 10,
-        'Timeout'          => $Args->{'Timeout'}       || 0,
-        'WaitComplete'     => $Args->{'WaitComplete'}  || 1,
+        'ChildCount'       => 10,
+        'Timeout'          => 0,
+        'WaitComplete'     => 1,
         'JobQueue'         => [],
         'Select'           => IO::Select->new(),
     };
 
-    foreach my $Arg ( qw { ParentCallback ProgressCallback JobsPerChild ChildSetupHook ChildTeardownHook } ) {
+    foreach my $Arg ( qw { Timeout ChildCount WaitComplete ParentCallback ProgressCallback JobsPerChild ChildSetupHook ChildTeardownHook } ) {
         $Self->{ $Arg  } = $Args->{ $Arg } if exists ( $Args->{ $Arg } );
     }
 

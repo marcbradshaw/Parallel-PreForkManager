@@ -17,9 +17,6 @@ my $Worker = Parallel::PreForkManager->new({
     'ChildHandler'      => \&WorkHandler,
     'ChildSetupHook'    => \&ChildSetupHook,
     'ChildTeardownHook' => \&ChildTeardownHook,
-    'ProgressCallback'  => {
-        'Log' => \&LogCallback,
-    },
     'ChildCount'     => 10,
 });
 
@@ -43,12 +40,6 @@ sub ChildSetupHook {
 sub ChildTeardownHook {
     my ( $Self ) = @_;
     print "ChildTeardownHook:$PID\n";
-    return;
-}
-
-sub LogCallback {
-    my ( $Self, $Data ) = @_;
-    push @Results, "LogCallback:$Data:$PID";
     return;
 }
 
