@@ -15,18 +15,17 @@ plan tests => 2;
 {
 
     my $Worker = Parallel::PreForkManager->new({
-        'ChildHandler'   => \&WorkHandler,
+        'ChildHandler'   => sub {
+            my ( $Self ) = @_;
+            $Self->ProgressCallback( 'BadLog', "This callback does not exist" );
+        },
         'ProgressCallback' => {
             'Log' => \&LogCallback,
         },
-        'ChildCount'     => 2,
-        'JobsPerChild'    => 2,
+        'ChildCount'   => 1,
+        'JobsPerChild' => 1,
     });
-
-    for ( my $i=0;$i<20;$i++ ) {
-        $Worker->AddJob({ 'Value' => $i });
-    }
-
+    $Worker->AddJob({ 'Value' => 1 });
     dies_ok { $Worker->RunJobs(); } 'Unknown callback name';
 
 }
@@ -34,34 +33,19 @@ plan tests => 2;
 {
 
     my $Worker = Parallel::PreForkManager->new({
-        'ChildHandler'   => \&WorkHandler2,
-        'ProgressCallback' => {
-            'Log' => \&LogCallback,
+        'ChildHandler'   => sub {
+            my ( $Self ) = @_;
+            $Self->ProgressCallback( 'Log', "This callback cannot be called" );
         },
-        'ChildCount'     => 2,
-        'JobsPerChild'    => 2,
+        'ProgressCallback' => {
+            'Log' => 'This callback cannot be called',
+        },
+        'ChildCount'   => 1,
+        'JobsPerChild' => 1,
     });
-
-    for ( my $i=0;$i<20;$i++ ) {
-        $Worker->AddJob({ 'Value' => $i });
-    }
+    $Worker->AddJob({ 'Value' => 1 });
 
     dies_ok { $Worker->RunJobs(); } 'Missing callback sub';
 
 }
-
-sub WorkHandler {
-        my ( $Self, $Thing ) = @_;
-        my $Val = $Thing->{'Value'};
-        $Self->ProgressCallback( 'BadLog', "WorkHandler:ProgressCallback:$Val" );
-        return "WorkHandler:Return:$Val";
-}
-
-sub WorkHandler2 {
-        my ( $Self, $Thing ) = @_;
-        my $Val = $Thing->{'Value'};
-        $Self->ProgressCallback( 'Log', "WorkHandler:ProgressCallback:$Val" );
-        return "WorkHandler:Return:$Val";
-}
-
 
