@@ -17,6 +17,16 @@ to methods in the parent process if required.
 
 Methods can be defined for child setup and teardown.
 
+[![Code on GitHub](https://img.shields.io/badge/github-repo-blue.svg)](https://github.com/marcbradshaw/Parallel-PreForkManager)
+
+[![Build Status](https://travis-ci.org/marcbradshaw/Parallel-PreForkManager.svg?branch=master)](https://travis-ci.org/marcbradshaw/Parallel-PreForkManager)
+
+[![Open Issues](https://img.shields.io/github/issues/marcbradshaw/Parallel-PreForkManager.svg)](https://github.com/marcbradshaw/Parallel-PreForkManager/issues)
+
+[![Dist on CPAN](https://img.shields.io/cpan/v/Parallel-PreForkManager.svg)](https://metacpan.org/release/Parallel-PreForkManager)
+
+[![CPANTS](https://img.shields.io/badge/cpants-kwalitee-blue.svg)](http://cpants.cpanauthors.org/dist/Parallel-PreForkManager)
+
 # SYNOPSIS
 
     use Parallel::PreForkManager;
