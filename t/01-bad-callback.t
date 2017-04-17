@@ -15,10 +15,12 @@ plan tests => 2;
 {
 
     my $Worker = Parallel::PreForkManager->new({
-        'ChildHandler'   => sub {
-            my ( $Self ) = @_;
-            $Self->ProgressCallback( 'BadLog', "This callback does not exist" );
-        },
+        # This sub is shown as not covered, even though it is run in tests
+        # Exclude it from coverage reporting
+        'ChildHandler'   => sub { # uncoverable statement
+            my ( $Self ) = @_; # uncoverable statement
+            $Self->ProgressCallback( 'BadLog', "This callback does not exist" ); # uncoverable statement
+        }, # uncoverable statement
         'ProgressCallback' => {
             'Log' => \&LogCallback,
         },
@@ -33,10 +35,12 @@ plan tests => 2;
 {
 
     my $Worker = Parallel::PreForkManager->new({
-        'ChildHandler'   => sub {
-            my ( $Self ) = @_;
-            $Self->ProgressCallback( 'Log', "This callback cannot be called" );
-        },
+        # This sub is shown as not covered, even though it is run in tests
+        # Exclude it from coverage reporting
+        'ChildHandler'   => sub { # uncoverable statement
+            my ( $Self ) = @_; # uncoverable statement
+            $Self->ProgressCallback( 'Log', "This callback cannot be called" ); # uncoverable statement
+        }, # uncoverable statement
         'ProgressCallback' => {
             'Log' => 'This callback cannot be called',
         },
