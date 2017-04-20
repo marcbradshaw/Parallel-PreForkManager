@@ -227,7 +227,8 @@ sub StartChild {
         $Self->Child($FromParent);
 
         # When the worker subroutine completes, exit
-        exit 0;
+        # &Child should already have done the exit.
+        exit 0; # uncoverable statement
     }
     else {
         confess("Failed to fork: $!");
