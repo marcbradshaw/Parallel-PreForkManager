@@ -589,6 +589,11 @@ IPC Send.
 
 =back
 
+=head1 JSON
+
+Note: All communication between the parent and a child are serialised using JSON.pm, please
+be aware of the data type restrictions of JSON serialisation.
+
 =head1 DEPENDENCIES
 
   Carp
