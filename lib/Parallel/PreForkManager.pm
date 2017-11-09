@@ -398,6 +398,7 @@ Methods can be defined for child setup and teardown.
 =head1 SYNOPSIS
 
     use Parallel::PreForkManager;
+    use English qw( -no_match_vars );
 
     my $Worker = Parallel::PreForkManager->new({
         'ChildHandler'      => \&WorkHandler,
@@ -437,7 +438,7 @@ Methods can be defined for child setup and teardown.
         my ( $Self, $Thing ) = @_;
         my $Val = $Thing->{'Value'};
         $Self->ProgressCallback( 'Log', "WORKER $PID - $Val" );
-        return "Printed $Val in $PID";
+        return { 'Data' => "Printed $Val in $PID" };
     }
 
     sub CallbackHandler {
