@@ -25,6 +25,7 @@ sub new {
         'WaitComplete'     => 1,
         'JobQueue'         => [],
         'Select'           => IO::Select->new(),
+        'ChildrenForked'   => 0,
     };
 
     foreach my $Arg ( qw { Timeout ChildCount WaitComplete ParentCallback ProgressCallback JobsPerChild ChildSetupHook ChildTeardownHook } ) {
@@ -197,6 +198,7 @@ sub StartChild {
 
     if ($pid) {
         # Parent
+        $Self->{ 'ChildrenForked' }++;
 
         # Close unused pipes
         close($ToParent);
