@@ -30,6 +30,7 @@ Methods can be defined for child setup and teardown.
 # SYNOPSIS
 
     use Parallel::PreForkManager;
+    use English qw( -no_match_vars );
 
     my $Worker = Parallel::PreForkManager->new({
         'ChildHandler'      => \&WorkHandler,
@@ -69,7 +70,7 @@ Methods can be defined for child setup and teardown.
         my ( $Self, $Thing ) = @_;
         my $Val = $Thing->{'Value'};
         $Self->ProgressCallback( 'Log', "WORKER $PID - $Val" );
-        return "Printed $Val in $PID";
+        return { 'Data' => "Printed $Val in $PID" };
     }
 
     sub CallbackHandler {
@@ -199,6 +200,11 @@ Methods can be defined for child setup and teardown.
 - Send
 
     IPC Send.
+
+# JSON
+
+Note: All communication between the parent and a child are serialised using JSON.pm, please
+be aware of the data type restrictions of JSON serialisation.
 
 # DEPENDENCIES
 
