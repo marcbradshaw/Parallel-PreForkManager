@@ -232,7 +232,7 @@ Marc Bradshaw, <marc@marcbradshaw.net>
 
 # COPYRIGHT
 
-Copyright (c) 2017, Marc Bradshaw.
+Copyright (c) 2018, Marc Bradshaw.
 
 # CREDITS
 

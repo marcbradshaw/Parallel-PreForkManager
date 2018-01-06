@@ -622,7 +622,7 @@ Marc Bradshaw, E<lt>marc@marcbradshaw.netE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2017, Marc Bradshaw.
+Copyright (c) 2018, Marc Bradshaw.
 
 =head1 CREDITS
 
